@@ -1,0 +1,20 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "gce"
+
+  config.vm.provider :google do |google, override|
+    google.google_project_id = "REPLACE_THIS"
+    google.google_client_email = "you@gmail.com"
+    google.google_json_key_location = "REPLACE_THIS.json"
+
+    #override.ssh.username = "ubuntu"
+    #override.ssh.private_key_path = "~/.ssh/nilesh.pem"
+  end
+
+  config.vm.provision "ansible" do |ansible|
+      ansible.playbook = "playbook.yml"
+  end
+
+end

@@ -1,0 +1,54 @@
+---
+
+- hosts: all
+  sudo: true
+  tasks:
+    - name: update apt cache
+      apt: update_cache=yes
+    - name: install dependencies
+      apt: name={{ item }} state=present
+      with_items:
+        - apache2
+        - mysql-server
+        - php5
+        - python-mysqldb
+        - php5-mysql
+        - mysql-common
+        - mysql-client
+        - libapache2-mod-php5
+        - php5-curl
+        - php5-gd
+        - php5-intl
+        - php-pear
+        - php5-imagick
+        - php5-imap
+        - php5-mcrypt
+        - php5-memcache
+        - php5-ming
+        - php5-ps
+        - php5-pspell
+        - php5-recode
+        - php5-sqlite
+        - php5-tidy
+        - php5-xmlrpc
+        - php5-xsl
+        - vim
+        - git-core
+
+    - name: enabled mod_rewrite
+      apache2_module: name=rewrite state=present
+      notify:
+        - restart apache2
+
+    - name: ensure mysql local root password is 123
+      mysql_user: check_implicit_admin=True login_user=root login_password="123" name=root password="123" state=present
+    - name: enable vagrant specific file structure
+      shell: rm -rf /var/www
+    - name: link to vagrant
+      shell: ln -fs /vagrant /var/www
+    - name: setup db script
+      shell: sh /vagrant/dbsetup.sh
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
